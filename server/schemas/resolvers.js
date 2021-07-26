@@ -16,7 +16,7 @@ const resolvers = {
                 return res.status(400).json({ message: "Can't find this user" });
             }
 
-            const correctPw = await user.isCorrectPassword(body.password);
+            const correctPw = await user.isCorrectPassword(password);
 
             if (!correctPw) {
                 return res.status(400).json({ message: 'Wrong password!' });
@@ -25,6 +25,16 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
+
+        addUser: async (parent, { username, email, password }) => {
+            const user = await User.create(body);
+
+            if (!user) {
+                return res.status(400).json({ message: 'Something is wrong!' });
+            }
+            const token = signToken(user);
+            return { token, user };
+        }
 
     }
 };
