@@ -13,13 +13,13 @@ const resolvers = {
         login: async (parent, { email, password }) => {
             const user = await User.findOne({ email: email });
             if (!user) {
-                return res.status(400).json({ message: "Can't find this user" });
+                return { message: "Can't find this user" };
             }
 
             const correctPw = await user.isCorrectPassword(password);
 
             if (!correctPw) {
-                return res.status(400).json({ message: 'Wrong password!' });
+                return { message: 'Wrong password!' };
             }
 
             const token = signToken(user);
@@ -30,10 +30,25 @@ const resolvers = {
             const user = await User.create(body);
 
             if (!user) {
-                return res.status(400).json({ message: 'Something is wrong!' });
+                return { message: 'Something is wrong!' }
             }
             const token = signToken(user);
             return { token, user };
+        },
+
+        saveBook: async (parent, { user, input }) => {
+            console.log(user);
+            try {
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: user._id },
+                    { $addToSet: { savedBooks: input } },
+                    { new: true, runValidators: true }
+                );
+                return updatedUser;
+            } catch (err) {
+                console.log(err);
+                return err;
+            }
         }
 
     }
