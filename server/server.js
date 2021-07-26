@@ -11,10 +11,16 @@ const server = new ApolloServer({
   resolvers,
 });
 
-server.applyMiddleware({ app });
+const apolloServerStart = async () => {
+  await server.start()
+  server.applyMiddleware({ app })
+  return app;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+apolloServerStart()
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
